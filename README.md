@@ -1,8 +1,10 @@
 # Introduction
 
-Every image preceded with ***(VSLAM)*** is an image made for a specific algorithm. 
+This is the repository of the Visual Simultaneous Localization and Mapping algorithms running within ALFRED. As there will probably be multiple VLSAMs (not working at the same time) each one lays in its own Docker image. 
 
 # Images
+
+Every image preceded with ***(VSLAM)*** is made for a specific VSLAM algorithm and does not depend on any other ***(VSLAM)*** image. 
 
 ## (VSLAM) 'orb-slam2' docker image usage
 
@@ -32,7 +34,6 @@ A core image with Intel Realsense SDK pre-installed and all common problems alre
 Build images:  
 ```bash
 make build-realsense-ready
-# or
-make build-orb-slam
 ```
+
 # "Demo in 5 minutes" like emergency
