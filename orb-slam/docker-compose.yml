@@ -1,0 +1,16 @@
+version: '3.9'
+
+services:
+  realsense-ready:
+    container_name: realsense-ready
+    image: lmwafer/realsense-ready:ubuntu18.04
+    restart: always
+    privileged: true
+    ports:
+      - "8086:8086"
+    environment:
+      - DISPLAY=$DISPLAY
+      - QT_X11_NO_MITSHM=1
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ./src:/app:rw
