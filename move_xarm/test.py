@@ -83,13 +83,14 @@ def move_arm_line(arm: XArmAPI, goal_pos=[0]*6,speed=None, mvacc=None,wait=False
     pos=arm.position
     final_pos=[x + y for x, y in zip(pos, goal_pos)]
     arm.set_position(*final_pos,speed=speed,mvacc=mvacc,wait=wait)
-
+    
 def test1(arm: XArmAPI):
     arm.set_servo_angle(1,100,speed=speed,mvacc=mvacc,relative=True, wait=True)
     arm.set_position(z=200,speed=speed,mvacc=mvacc,relative=True,wait=True)
     arm.set_tool_position(x=350,speed=speed,mvacc=mvacc,relative=True,wait=True)
     #arm.set_position(y=100,speed=speed,mvacc=mvacc,relative=True,wait=True)
     arm.set_servo_angle(servo_id=5,angle=30,speed=speed,mvacc=mvacc, wait=True,is_radian=False)
+    
 
 def main():
     arm = robot_start()
