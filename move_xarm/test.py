@@ -3,6 +3,7 @@ import time
 from queue import Queue
 from typing import final
 import sys
+from math import *
 
 import numpy as np
 
@@ -87,14 +88,26 @@ def move_arm_line(arm: XArmAPI, goal_pos=[0]*6,speed=None, mvacc=None,wait=False
 def test1(arm: XArmAPI):
     arm.set_servo_angle(1,100,speed=speed,mvacc=mvacc,relative=True, wait=True)
     arm.set_position(z=200,speed=speed,mvacc=mvacc,relative=True,wait=True)
-    arm.set_tool_position(x=350,speed=speed,mvacc=mvacc,relative=True,wait=True)
+    #arm.set_tool_position(x=350,speed=speed,mvacc=mvacc,relative=True,wait=True)
     #arm.set_position(y=100,speed=speed,mvacc=mvacc,relative=True,wait=True)
-    arm.set_servo_angle(servo_id=5,angle=30,speed=speed,mvacc=mvacc, wait=True,is_radian=False)
-    
+    #arm.set_servo_angle(servo_id=5,angle=30,speed=speed,mvacc=mvacc, wait=True,is_radian=False)
 
+
+def points(pos,length:int, start_angle:int,end_angle:int, step:int):
+    points=[]
+    while start_angle>=end_angle:
+        add_pos=[(11+length)*cos(radians(start_angle)), (10+length)*sin(radians(start_angle)),10,0,-7.4,0] 
+        pos=list(map(lambda x,y: x+y, pos,add_pos))
+        points.append(pos)
+        start_angle-=step
+    return points
 def main():
     arm = robot_start()
     test1(arm)
+    pos=arm.position
+    print(pos)
+    pp=points(pos,350,100,90,10)
+    print(pp[0])
 
 if __name__ == "__main__":
     main()
