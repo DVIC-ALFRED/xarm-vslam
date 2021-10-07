@@ -86,13 +86,15 @@ def points_line(pos:float=init_pos,height:int=0,length:int=0, start_angle:int=0,
         start_angle-=step
     return points
 
-def points_arc(pos:float=init_pos,height:int=0,length:int=[0,100,200],start_angle:int=0,end_angle:int=0):
+def points_arc(pos:float=init_pos,height:int=0,length:int=[0,100,200],start_angle:int=0,end_angle:int=0,roll_angle:int=20):
     """Get points for the arc"""
     pos[2]+=height #change the height of the scanning
     points=[] #add the first position for the height
     for i in range(len(length)):
         angle=radians(start_angle) if i%2==0 else radians(end_angle)#convert angle in degrees
-        start_pos=[(pos[0]+length[i])*cos(angle),(pos[0]+length[i])*sin(angle)]+pos[2:-1]+[pos[-1]+degrees(angle)] # =[(x+l)*cosA, (x+l)*sinA, z+h, roll, pitch, yaw+A]
+        signe=-1 if i%2==0 else 1
+        roll=180+signe*roll_angle
+        start_pos=[(pos[0]+length[i])*cos(angle),(pos[0]+length[i])*sin(angle),pos[2],roll]+pos[4:-1]+[pos[-1]+degrees(angle)] # =[(x+l)*cosA, (x+l)*sinA, z+h, roll, pitch, yaw+A]
         points.append(start_pos)
     return points
 
@@ -103,19 +105,21 @@ def scanner_line(arm: XArmAPI,pos:float=init_pos,height:int=0,length:int=0, star
     for point in arm_pos:
         arm.set_position(*point,speed=speed,mvacc=mvacc,wait=True)
 
-def scanner_arc(arm: XArmAPI,pos:float=init_pos,height:int=0,length:int=[0,100,200],start_angle:int=0,end_angle:int=0)->None:
+def scanner_arc(arm: XArmAPI,pos:float=init_pos,height:int=0,length:int=[0,100,200],start_angle:int=0,end_angle:int=0,roll_angle:int=20)->None:
     """Move arm in arc cercle"""
-    arm_pos=points_arc(pos,height,length,start_angle,end_angle)
+    arm_pos=points_arc(pos,height,length,start_angle,end_angle,roll_angle)
     for i in range(len(arm_pos)):
         angle=abs(start_angle-end_angle)
-        angle=(-1)*angle if i%2==0 else angle
+        signe = -1 if i%2==0 else 1
+        angle = signe*angle 
         arm.set_position(*arm_pos[i],speed=speed,mvacc=mvacc,wait=True)
-        arm.set_servo_angle(1,angle,speed=speed/2,mvacc=mvacc,relative=True, wait=True)
+        arm.set_servo_angle(1,angle,speed=speed/2,mvacc=mvacc,relative=True, wait=False)
 
 def main():
     arm = robot_start()
     #scanner_line(arm,init_pos,200,300,100,-100,50)
-    #scanner_arc(arm,init_pos,350,[0,300],80,-80)
+    scanner_arc(arm,init_pos,350,[0,300],80,-80,20)
+    arm.set_position(*init_pos,speed=speed,mvacc=mvacc,wait=True)
 
 if __name__ == "__main__":
     main()
