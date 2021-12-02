@@ -1,0 +1,4 @@
+orb-slam/app/build
+orb-slam/app/lib
+orb-slam/app/include
+*.png

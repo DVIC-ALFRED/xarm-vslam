@@ -1,5 +1,6 @@
 REALSENSE_READY_IM_NAME=lmwafer/realsense-ready
 REALSENSE_READY_IM_TAG=ubuntu18.04
+REALSENSE_READY_CONT_NAME=realsense-ready
 ORB_SLAM_IM_NAME=orb-ready
 ORB_SLAM_IM_TAG=latest
 ORB_SLAM_CONT_NAME=orb-container # You will need to apply the exact same name to container_name in orb-slam/docker-compose.yml
@@ -18,8 +19,19 @@ down-orb:
 build-orb-slam:
 	cd orb-slam && sudo docker build -t ${ORB_SLAM_IM_NAME}:${ORB_SLAM_IM_TAG} .
 
+
+up-realsense:
+	sudo xhost +local:root && cd realsense-ready && sudo docker-compose up -d
+
+enter-realsense:
+	clear && docker exec -it ${REALSENSE_READY_CONT_NAME} bash
+
+down-realsense:
+	cd realsense-ready && docker-compose down
+
 build-realsense-ready:
 	cd realsense-ready && sudo docker build -t ${REALSENSE_READY_IM_NAME}:${REALSENSE_READY_IM_TAG} .
+
 
 emergency: down-orb up-orb
 	docker exec -it ${ORB_SLAM_CONT_NAME} rs-multicam
