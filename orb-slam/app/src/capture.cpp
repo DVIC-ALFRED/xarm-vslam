@@ -18,6 +18,7 @@ try
 
     // Declare RealSense pipeline, encapsulating the actual device and sensors
     rs2::pipeline pipe;
+
     // Start streaming with default recommended configuration
     pipe.start();
 
@@ -33,25 +34,28 @@ try
     txtfile.open(filename.str());
     txtfile << "# color images"
             << "\n";
+
+    rs2::frame* f = new rs2::frame[20];
     for (size_t i = 0; i < 20; ++i)
     {
         for (auto &&frameset : pipe.wait_for_frames())
         {
             // We can only save video frames as pngs, so we skip the rest
-            if (auto vf = frameset.as<rs2::video_frame>())
+            if (rs2::video_frame vf = frameset.as<rs2::video_frame>())
             {
-                auto stream = frameset.get_profile().stream_type();
+                // rs2_stream stream = frameset.get_profile().stream_type();
                 // Use the colorizer to get an rgb image for the depth stream
-                if (vf.is<rs2::depth_frame>())
-                    vf = color_map.process(frameset);
+                // if (vf.is<rs2::depth_frame>())
+                //     vf = color_map.process(frameset);
 
                 if (vf.get_profile().stream_name() == "Color")
                 {
+                    f[i] = vf;
                     std::stringstream png_file;
                     // -> Save the image in the following format : "<frame_number>.png"
-                    png_file << "dataset/rgb/" << vf.get_frame_number() << ".png";
-                    stbi_write_png(png_file.str().c_str(), vf.get_width(), vf.get_height(),
-                                   vf.get_bytes_per_pixel(), vf.get_data(), vf.get_stride_in_bytes());
+                    png_file << "images/" << vf.get_frame_number() << ".png";
+                    stbi_write_png(png_file.str().c_str(), vf.get_width(), vf.get_height(), 
+                            vf.get_bytes_per_pixel(), vf.get_data(), vf.get_stride_in_bytes());
 
                     // -> Save the timestamp in the following format : "<time_stamp> rgb/<frame_number>.png"
                     txtfile << std::fixed << vf.get_timestamp() << " rgb/" << vf.get_frame_number() << ".png"

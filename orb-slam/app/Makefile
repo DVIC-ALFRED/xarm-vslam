@@ -22,3 +22,15 @@ prepare:
 	rm rgbd_dataset_freiburg1_rpy.tgz && \
 	rm rgbd_dataset_freiburg2_xyz.tgz && \
 	rm rgbd_dataset_freiburg2_rpy.tgz
+
+clear:
+	rm -rf build
+	mkdir -p build/images
+
+build: clear
+	cd src && \
+	g++ capture.cpp -o ../build/capture -lGL -lGLU -lrealsense2
+
+run: build
+	cd build && \
+	./capture
