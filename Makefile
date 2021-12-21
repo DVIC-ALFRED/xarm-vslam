@@ -1,8 +1,8 @@
 REALSENSE_READY_IM_NAME=lmwafer/realsense-ready
 REALSENSE_READY_IM_TAG=2.0-ubuntu18.04
 REALSENSE_READY_CONT_NAME=realsense-container
-ORB_SLAM_IM_NAME=orb-ready
-ORB_SLAM_IM_TAG=latest
+ORB_SLAM_IM_NAME=lmwafer/orb-slam2-ready
+ORB_SLAM_IM_TAG=1.1-ubuntu18.04
 ORB_SLAM_CONT_NAME=orb-container # You will need to apply the exact same name to container_name in orb-slam/docker-compose.yml
 
 all: up-orb enter-orb
