@@ -14,6 +14,7 @@ services:
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix     # For orb-ready only, give access to X11
       - ./app:/app:rw
+      - /dev:/dev:ro
     stdin_open: true                      # For orb-ready only, equivalent to "docker run -i"
     tty: true                             # For orb-ready only, equivalent to "docker run -t"
 
