@@ -2,14 +2,14 @@
 
 ## Repository
 
-This is the repository of the Visual Simultaneous Localization and Mapping algorithms running within ALFRED. As there will probably be multiple VLSAMs (not working at the same time) each one lays in its own Docker image. 
+This is the repository of the Visual Simultaneous Localization and Mapping algorithms running within ALFRED. As there will probably be multiple vLSAMs (not working at the same time) each one lays in its own Docker image. 
 
 ## Images
 
 Every image preceded with ***(vSLAM Algorithm)*** is made for a specific VSLAM algorithm and does not depend on any other ***(vSLAM Algorithm)*** image. 
 
 
-# (vSLAM Algorithm) '**orb-slam2**'
+# (vSLAM Algorithm) '**ORB-SLAM 3**'
 
 See on Docker Hub [lmwafer/orb-slam2-ready](https://hub.docker.com/r/lmwafer/orb-slam2-ready). 
 
@@ -63,7 +63,7 @@ Get inside a freshly new container (basically `up` + `enter`)
 make
 ```
 
-Run a container (uses **orb-slam/docker-compose.yml**)
+Run a container (uses **orb-slam-3/docker-compose.yml**)
 ```bash
 make up-orb
 ```
@@ -78,9 +78,9 @@ Shut down ORB SLAM container (will remove the container, only data in **/app** w
 make down-orb
 ```
 
-Build orb-slam image (uses **orb-slam/Dockerfile**)
+Build orb-slam image (uses **orb-slam-3/Dockerfile**)
 ```bash
-make build-orb-slam
+make build-orb
 ```
 
 # (Camera SDK) '**realsense-ready**'
@@ -114,7 +114,22 @@ make emergency # /!\ Remove running orb-slam containers, it's an emergency huh
 
 A core image with Intel Realsense SDK pre-installed and all common problems already fixed <3 ! You need to run the command in **xarm-vslam** directory. 
 
-Build images (uses **realsense-ready/Dockerfile**)
+Run a container (uses **realsense-ready-v2/docker-compose.yml**)
 ```bash
-make build-realsense-ready
+make up-realsense
+```
+
+Enter the upped container
+```bash
+make enter-realsense
+```
+
+Shut down ORB SLAM container (will remove the container, only data in **/app** will be saved)
+```bash
+make down-realsense
+```
+
+Build orb-slam image (uses **realsense-ready-v2/Dockerfile**)
+```bash
+make build-realsense
 ```

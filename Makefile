@@ -7,7 +7,7 @@ ORB_SLAM_IM_NAME=lmwafer/orb-slam-3-ready
 ORB_SLAM_IM_TAG=1.0-ubuntu18.04
 ORB_SLAM_CONT_NAME=orb-container # You will need to apply the exact same name to container_name in orb-slam/docker-compose.yml
 
-all: up-orb enter-orb
+default: up-orb enter-orb
 
 up-orb:
 	sudo xhost +local:root && cd ${ORB_SLAM_DIRECTORY} && sudo docker-compose up -d
@@ -18,7 +18,7 @@ enter-orb:
 down-orb:
 	cd ${ORB_SLAM_DIRECTORY} && docker-compose down
 
-build-orb-slam:
+build-orb:
 	cd ${ORB_SLAM_DIRECTORY} && sudo docker build -t ${ORB_SLAM_IM_NAME}:${ORB_SLAM_IM_TAG} .
 
 
@@ -31,7 +31,7 @@ enter-realsense:
 down-realsense:
 	cd realsense-ready-v2/ && docker-compose down
 
-build-realsense-ready:
+build-realsense:
 	cd realsense-ready-v2/ && sudo docker build -t ${REALSENSE_READY_IM_NAME}:${REALSENSE_READY_IM_TAG} .
 
 emergency: down-orb up-orb

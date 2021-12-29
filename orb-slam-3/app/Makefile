@@ -12,9 +12,8 @@ prepare:
 	apt-get update
 	apt-get install -y wget tar
 	cd /app/ && \
-	rm -rf data/datasets/ && \
-	mkdir data/datasets/ && \
-	cd data/datasets/ && \
+	mkdir datasets/ && \
+	cd datasets/ && \
 	wget https://vision.in.tum.de/rgbd/dataset/freiburg1/rgbd_dataset_freiburg1_xyz.tgz && \
 	wget https://vision.in.tum.de/rgbd/dataset/freiburg1/rgbd_dataset_freiburg1_rpy.tgz && \
 	wget https://vision.in.tum.de/rgbd/dataset/freiburg2/rgbd_dataset_freiburg2_xyz.tgz && \
