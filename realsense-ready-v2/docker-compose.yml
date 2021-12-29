@@ -7,7 +7,7 @@ services:
     restart: always
     privileged: true
     ports:
-      - "8086:8086"
+      - "8084:8084"
     environment:
       - DISPLAY=$DISPLAY                  # Give access to display
       - QT_X11_NO_MITSHM=1

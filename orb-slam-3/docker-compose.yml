@@ -2,12 +2,12 @@ version: '3.7'
 
 services:
   realsense-ready:
-    container_name: orb-container
+    container_name: orb-3-container
     image: lmwafer/orb-slam-3-ready:1.0-ubuntu18.04
     restart: always
     privileged: true
     ports:
-      - "8086:8086"                       # Inherited from realsense-ready
+      - "8087:8087"                       # Inherited from realsense-ready
     environment:
       - DISPLAY=$DISPLAY                  # Inherited from realsense-ready
       - QT_X11_NO_MITSHM=1                # Inherited from realsense-ready
