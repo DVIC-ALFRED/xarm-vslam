@@ -1,0 +1,125 @@
+#==============#
+# Camera Model
+
+#==============#
+
+Camera.name: "Realsense 435i"
+# Camera.setup - can change into stereo or RGBD
+
+Camera.setup: "RGBD"
+Camera.model: "perspective"
+# parameters for RGB image (change according to your camera calibration)
+
+Camera.fx: 608.958435
+Camera.fy: 608.723389
+Camera.cx: 321.793488
+Camera.cy: 240.326843
+
+Camera.k1: 0.0
+Camera.k2: 0.0
+Camera.p1: 0.0
+Camera.p2: 0.0
+Camera.k3: 0.0
+# parameters for stereo setup. (change according to your camera calibration)
+
+LEFT.height: 480
+LEFT.width: 640
+LEFT.D: !!opencv-matrix
+rows: 1
+cols: 5
+dt: d
+data: [-0.015627, 0.000299, 0.000140, 0.000878, 0.000000]
+LEFT.K: !!opencv-matrix
+rows: 3
+cols: 3
+dt: d
+data: [382.80267333984375, 0.0, 316.8811340332031, 0.0, 382.80267333984375, 237.82000732421875, 0.0, 0.0, 1.0]
+LEFT.R: !!opencv-matrix
+rows: 3
+cols: 3
+dt: d
+data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+LEFT.P: !!opencv-matrix
+rows: 3
+cols: 4
+dt: d
+data: [382.80267333984375, 0.0, 316.8811340332031, 0.0, 0.0, 382.80267333984375, 237.82000732421875, 0.0, 0.0, 0.0, 1.0, 0.0]
+
+RIGHT.height: 480
+RIGHT.width: 640
+RIGHT.D: !!opencv-matrix
+rows: 1
+cols: 5
+dt: d
+data: [0.0, 0.0, 0.0, 0.0, 0.0]
+RIGHT.K: !!opencv-matrix
+rows: 3
+cols: 3
+dt: d
+data: [382.80267333984375, 0.0, 316.8811340332031, 0.0, 382.80267333984375, 237.82000732421875, 0.0, 0.0, 1.0]
+RIGHT.R: !!opencv-matrix
+rows: 3
+cols: 3
+dt: d
+data: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+RIGHT.P: !!opencv-matrix
+rows: 3
+cols: 4
+dt: d
+data: [382.80267333984375, 0.0, 316.8811340332031, 0.0, 0.0, 382.80267333984375, 237.82000732421875, 0.0, 0.0, 0.0, 1.0, 0.0]
+
+Camera.fps: 30.0
+Camera.cols: 640
+Camera.rows: 480
+Camera.focal_x_baseline: 18.39835242 # please change this parameter your_camera_fx*baseline
+
+Camera.color_order: "RGB"
+
+#================#
+# ORB Parameters
+
+#================#
+
+Feature.max_num_keypoints: 1000
+Feature.scale_factor: 1.2
+Feature.num_levels: 8
+Feature.ini_fast_threshold: 20
+Feature.min_fast_threshold: 7
+
+#=====================#
+# Tracking Parameters
+
+#=====================#
+
+depth_threshold: 10.0
+depthmap_factor: 1000.0
+
+#========================#
+# Initializer Parameters
+
+#========================#
+
+Initializer.num_min_triangulated_pts: 400
+
+#===========================#
+# PangolinViewer Parameters
+
+#===========================#
+
+PangolinViewer.keyframe_size: 0.07
+PangolinViewer.keyframe_line_width: 1
+PangolinViewer.graph_line_width: 1
+PangolinViewer.point_size: 2
+PangolinViewer.camera_size: 0.08
+PangolinViewer.camera_line_width: 3
+PangolinViewer.viewpoint_x: 0
+PangolinViewer.viewpoint_y: -0.65
+PangolinViewer.viewpoint_z: -1.9
+PangolinViewer.viewpoint_f: 400
+
+#=====================#
+# Tracking Parameters
+
+#=====================#
+
+#depth_threshold: 40

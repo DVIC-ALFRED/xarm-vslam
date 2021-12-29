@@ -1,7 +1,7 @@
-FROM lmwafer/realsense-ready:ubuntu18.04
+FROM lmwafer/realsense-ready:2.0-ubuntu18.04
 
-RUN apt install -y git nano cmake wget libglew-dev && \
-    mkdir /app && mkdir /dpds && cd /dpds && \
+RUN apt install -y nano libglew-dev && \
+    cd /dpds && \
     
     wget https://github.com/stevenlovegrove/Pangolin/archive/refs/tags/v0.5.tar.gz && \
     tar -xzf v0.5.tar.gz && \
@@ -19,8 +19,8 @@ RUN apt install -y git nano cmake wget libglew-dev && \
     mkdir build && cd build && \
     cmake .. && \
     make && \
-    sudo make install && \
-    sudo ldconfig && \
+    make install && \
+    ldconfig && \
 
     cd /dpds && \
     wget https://gitlab.com/libeigen/eigen/-/archive/3.1.0/eigen-3.1.0.tar.gz && \
