@@ -1,5 +1,11 @@
-# Runs the demo
-demo:
+# Runs the real-time demo
+demo-realtime:
+	/dpds/ORB_SLAM3/Examples/Monocular/mono_realsense_D435i \
+	/dpds/ORB_SLAM3/Vocabulary/ORBvoc.txt \
+	/dpds/ORB_SLAM3/Examples/Monocular/RealSense_D435i.yaml
+
+# Runs the datasets demo
+demo-datasets:
 		while [ true ] ; do \
 			cd /dpds/ORB_SLAM3/ && ./Examples/Monocular/mono_tum Vocabulary/ORBvoc.txt Examples/Monocular/TUM1.yaml /app/datasets/rgbd_dataset_freiburg1_xyz ; \
 			cd /dpds/ORB_SLAM3/ && ./Examples/Monocular/mono_tum Vocabulary/ORBvoc.txt Examples/Monocular/TUM1.yaml /app/datasets/rgbd_dataset_freiburg1_rpy ; \
