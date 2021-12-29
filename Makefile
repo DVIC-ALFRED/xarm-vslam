@@ -43,8 +43,14 @@ down-orb-3:
 build-orb-3:
 	cd ${ORB_SLAM_3_DIRECTORY} && sudo docker build -t ${ORB_SLAM_3_IM_NAME}:${ORB_SLAM_3_IM_TAG} .
 
-demo-orb-3: down-orb-3 up-orb-3
-	docker exec -it -w /app ${ORB_SLAM_3_CONT_NAME} make demo
+demo-orb-3-dts: down-orb-3 up-orb-3
+	docker exec -it -w /app ${ORB_SLAM_3_CONT_NAME} make demo-datasets
+
+prepare-orb-3-dts:
+	docker exec -it -w /app ${ORB_SLAM_3_CONT_NAME} make prepare
+
+demo-orb-3-rt: down-orb-3 up-orb-3
+	docker exec -it -w /app ${ORB_SLAM_3_CONT_NAME} make demo-realtime
 
 
 up-realsense:

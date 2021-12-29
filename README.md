@@ -40,26 +40,19 @@ The tag may be outdated. See on [Dockerhub](https://hub.docker.com/r/lmwafer/orb
 docker pull lmwafer/orb-slam2-ready:1.0-ubuntu18.04
 ```
   
-## Image demo
+## Image dataset demo
 
-You may want a cool demo of ORM-SLAM 2. For such applications the library provides examples based on common datasets. We will use TUM. 
-
-All the commands need to be run in **xarm-vlsam** directory. 
-
-### Run demo
-
-```bash
-make demo-orb-2
-```
+Without a camera you can still run the provided demo on known datasets. We will use TUM. 
 
 ### Setup demo
-```bash
-make up-orb-2 && make enter-orb-2
-```
-then inside the container
-```bash
-cd /app && make prepare
-```
+1. Run this in **xarm-vlsam** directory to create and enter a container
+    ```bash
+    make up-orb-2 enter-orb-2
+    ```
+2. Then type this inside the container to download and extract 4 TUM datasets
+    ```bash
+    cd /app && make prepare
+    ```
 
 ## Image usage
 All the commands need to be run in **xarm-vlsam** directory. 
@@ -93,7 +86,7 @@ It is based on Docker image realsense-ready to use Intel RealSense 2 SDK and cam
 
 - Docker (tested with Docker 20.10.7), see [Install Docker Engine](https://docs.docker.com/engine/install/)
 
-- Docker Compose (tested with Docker Compose 1.29.2), see [Install Docker Compose](https://docs.docker.com/compose/install/)  
+- Docker Compose (tested with Docker Compose 1.29.2), see [Install Docker Compose](https://docs.docker.com/compose/install/)
   You may have a `/usr/local/bin/docker-compose: no such file or directory` error. In this case, use
   ```bash
   sudo mkdir /usr/local/bin/docker-compose
@@ -116,25 +109,29 @@ The tag may be outdated. See on [Dockerhub](https://hub.docker.com/r/lmwafer/orb
 docker pull lmwafer/orb-slam-3-ready:1.0-ubuntu18.04
 ```
   
-## Image demo
+## Image real-time demo
 
-You may want a cool demo of ORM-SLAM 3. For such applications the library provides examples based on common datasets. We will use TUM. 
+With a realsense camera aviable you may want a cool real-time demo of the vSLAM. 
+1. Connect an Intel Realsense D435i or D435 via USB
+2. Run this in **xarm-vlsam** directory to create and enter a container
+    ```bash
+    make demo-orb-3-rt
+    ```
+
+## Image dataset demo
+
+Without a camera you can still run the provided demo on known datasets. We will use TUM. 
 
 All the commands need to be run in **xarm-vlsam** directory. 
+### Setup demo
+```bash
+make prepare-orb-3-dts
+```
 
 ### Run demo
 
 ```bash
-make demo-orb-3
-```
-
-### Setup demo
-```bash
-make
-```
-then
-```bash
-cd /app && make prepare
+make demo-orb-3-dts
 ```
 
 ## Image usage
@@ -187,9 +184,9 @@ This demo displays a *depth* vs *camera* video stream.
 
 1. Connect an Intel Realsense camera via USB.
 2. Run this in **xarm-vlsam** directory
-```bash
-make demo-realsense # /!\ Remove running orb-slam containers, it's an emergency huh
-```
+    ```bash
+    make demo-realsense # /!\ Remove running orb-slam containers, it's an emergency huh
+    ```
 3. Make this shitty window appear to people like an insane feature.
 
 ## Image usage
