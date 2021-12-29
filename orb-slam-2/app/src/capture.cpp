@@ -13,21 +13,43 @@
 int main(int argc, char *argv[])
 try
 {
+    // window app(1280, 720, "LMsCapture");
     // Declare depth colorizer for pretty visualization of depth data
     rs2::colorizer color_map;
 
     // Declare RealSense pipeline, encapsulating the actual device and sensors
-    rs2::pipeline pipe;
+    auto pipe = std::make_shared<rs2::pipeline>();
+
+    // Declare config object to only enable color stream => remove IR stream dots
+    rs2::config cfg1;
+    cfg1.enable_stream(RS2_STREAM_COLOR, -1, 640, 360, rs2_format::RS2_FORMAT_ANY, 0);
+    cfg1.enable_record_to_file("a.bag");
 
     // Start streaming with default recommended configuration
-    pipe.start();
+    pipe->start(cfg1);
 
     // Capture 30 frames to give autoexposure, etc. a chance to settle
     for (auto i = 0; i < 30; ++i)
-        pipe.wait_for_frames();
+        pipe->wait_for_frames();
 
     // Wait for the next set of frames from the camera. Now that autoexposure, etc.
     // has settled, we will write these to disk
+    std::cout << "Début capture" << std::endl;
+
+    std::vector<rs2::frame> frames;
+    for (size_t i = 0; i < 30; ++i)
+    {
+        rs2::frameset data = pipe->wait_for_frames();
+    }
+    std::cout << pipe->get_active_profile().get_device().as<rs2::playback>() << std::endl;
+    pipe->stop();
+    pipe = std::make_shared<rs2::pipeline>();
+
+    std::cout << "Fin capture, début restitution" << std::endl;
+
+    std::stringstream png_file;
+
+    // Declare txt stream to save timestamps
     std::stringstream filename;
     filename << "dataset/rbg.txt";
     std::ofstream txtfile;
@@ -35,38 +57,35 @@ try
     txtfile << "# color images"
             << "\n";
 
-    rs2::frame* f = new rs2::frame[20];
-    for (size_t i = 0; i < 20; ++i)
+    // pipe = std::make_shared<rs2::pipeline>();
+    rs2::config cfg2;
+    cfg2.enable_device_from_file("a.bag");
+    pipe->start(cfg2);
+    std::cout << pipe->get_active_profile().get_device().as<rs2::playback>() << std::endl;
+    for (int i = 0; i < 30; i++)
     {
-        for (auto &&frameset : pipe.wait_for_frames())
+        for (auto &&frameset : pipe->wait_for_frames())
         {
-            // We can only save video frames as pngs, so we skip the rest
             if (rs2::video_frame vf = frameset.as<rs2::video_frame>())
             {
-                // rs2_stream stream = frameset.get_profile().stream_type();
-                // Use the colorizer to get an rgb image for the depth stream
-                // if (vf.is<rs2::depth_frame>())
-                //     vf = color_map.process(frameset);
-
                 if (vf.get_profile().stream_name() == "Color")
                 {
-                    f[i] = vf;
-                    std::stringstream png_file;
                     // -> Save the image in the following format : "<frame_number>.png"
                     png_file << "images/" << vf.get_frame_number() << ".png";
-                    stbi_write_png(png_file.str().c_str(), vf.get_width(), vf.get_height(), 
-                            vf.get_bytes_per_pixel(), vf.get_data(), vf.get_stride_in_bytes());
+                    stbi_write_png(png_file.str().c_str(), vf.get_width(), vf.get_height(),
+                                   vf.get_bytes_per_pixel(), vf.get_data(), vf.get_stride_in_bytes());
 
                     // -> Save the timestamp in the following format : "<time_stamp> rgb/<frame_number>.png"
                     txtfile << std::fixed << vf.get_timestamp() << " rgb/" << vf.get_frame_number() << ".png"
                             << "\n";
 
                     // -> Let the user know which images are being saved
-                    std::cout << std::fixed << vf.get_timestamp() << " rgb/" << vf.get_frame_number() << ".png" << std::endl;
+                    std::cout << std::fixed << vf.get_timestamp() << " images/" << vf.get_frame_number() << ".png" << std::endl;
                 }
             }
         }
     }
+    pipe->stop();
     txtfile.close();
 
     return EXIT_SUCCESS;

@@ -29,7 +29,7 @@ prepare:
 	rm rgbd_dataset_freiburg2_rpy.tgz
 
 clear:
-	rm -rf build
+	rm -rf build/*
 	mkdir -p build/images
 
 build: clear
