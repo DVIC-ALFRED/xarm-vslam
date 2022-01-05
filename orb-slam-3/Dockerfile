@@ -1,3 +1,4 @@
+# This is a Docker file to build a Docker image with ORB-SLAM 3 and all its dependencies pre-installed
 # For more info about ORB-SLAM 3 dependencies go check https://github.com/UZ-SLAMLab/ORB_SLAM3
 FROM lmwafer/realsense-ready:2.0-ubuntu18.04
 
@@ -128,7 +129,7 @@ RUN echo "Getting ORB-SLAM 3 installation ready ..." && \
     cd build/ && \
     cmake -D CMAKE_BUILD_TYPE=Release \
     /dpds/ORB_SLAM3/Thirdparty/Sophus/ && \
-    make -j && \
+    make -j4 && \
 
     #-> Uncompress vocabulary
     #-? ORB-SLAM 3 useful data
