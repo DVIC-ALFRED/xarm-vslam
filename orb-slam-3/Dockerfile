@@ -4,7 +4,7 @@ FROM lmwafer/realsense-ready:2.0-ubuntu18.04
 
     #-[] Install dependencies
 RUN apt-get update && \
-    apt-get -y upgrade && \
+    apt-get upgrade -y  && \
 
     #-> Install general usage dependencies
     echo "Installing general usage dependencies ..." && \
@@ -141,8 +141,12 @@ RUN echo "Getting ORB-SLAM 3 installation ready ..." && \
     #-> Install ORB-SLAM 3
     #-? Another RUN command in order to free memory
 RUN echo "Configuring and building ORB_SLAM3 ..." && \
-    cd /dpds/ORB_SLAM3 && \
-    mkdir build && \
+    cd /dpds/ORB_SLAM3/ && \
+    rm include/System.h
+
+COPY System.h /dpds/ORB_SLAM3/include/
+
+RUN mkdir build && \
     cd build/ && \
     cmake -D CMAKE_BUILD_TYPE=Release \
     -D CMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/ \

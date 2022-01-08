@@ -9,7 +9,7 @@ ORB_SLAM_2_CONT_NAME=orb-2-container # You will need to apply the exact same nam
 
 ORB_SLAM_3_DIRECTORY=orb-slam-3/
 ORB_SLAM_3_IM_NAME=lmwafer/orb-slam-3-ready
-ORB_SLAM_3_IM_TAG=1.0-ubuntu18.04
+ORB_SLAM_3_IM_TAG=1.1b-ubuntu18.04
 ORB_SLAM_3_CONT_NAME=orb-3-container # You will need to apply the exact same name to container_name in orb-slam/docker-compose.yml
 
 default: up-orb-3 enter-orb-3

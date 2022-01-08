@@ -2,3 +2,5 @@ build/
 data/
 datasets/
 .vscode/
+KeyFrameTrajectory.txt
+CameraTrajectory.txt

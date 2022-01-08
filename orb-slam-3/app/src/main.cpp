@@ -33,27 +33,30 @@
 #include "librealsense2/rsutil.h"
 
 #include <System.h>
+#include <MapPoint.h>
 
 using namespace std;
+using namespace ORB_SLAM3;
 
 bool b_continue_session;
 
-void exit_loop_handler(int s){
+void exit_loop_handler(int s)
+{
     cout << "Finishing session" << endl;
     b_continue_session = false;
-
 }
 
 rs2_vector interpolateMeasure(const double target_time,
                               const rs2_vector current_data, const double current_time,
                               const rs2_vector prev_data, const double prev_time);
 
-static rs2_option get_sensor_option(const rs2::sensor& sensor)
+static rs2_option get_sensor_option(const rs2::sensor &sensor)
 {
     // Sensors usually have several options to control their properties
     //  such as Exposure, Brightness etc.
 
-    std::cout << "Sensor supports the following options:\n" << std::endl;
+    std::cout << "Sensor supports the following options:\n"
+              << std::endl;
 
     // The following loop shows how to iterate over all available options
     // Starting from 0 until RS2_OPTION_COUNT (exclusive)
@@ -71,7 +74,7 @@ static rs2_option get_sensor_option(const rs2::sensor& sensor)
             std::cout << std::endl;
 
             // Get a human readable description of the option
-            const char* description = sensor.get_option_description(option_type);
+            const char *description = sensor.get_option_description(option_type);
             std::cout << "       Description   : " << description << std::endl;
 
             // Get the current value of the option
@@ -90,9 +93,11 @@ static rs2_option get_sensor_option(const rs2::sensor& sensor)
     return static_cast<rs2_option>(selected_sensor_option);
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
 
-    if (argc < 3 || argc > 4) {
+    if (argc < 3 || argc > 4)
+    {
         cerr << endl
              << "Usage: ./mono_realsense_D435i path_to_vocabulary path_to_settings (trajectory_file_name)"
              << endl;
@@ -101,7 +106,8 @@ int main(int argc, char **argv) {
 
     string file_name;
 
-    if (argc == 4) {
+    if (argc == 4)
+    {
         file_name = string(argv[argc - 1]);
     }
 
@@ -131,18 +137,21 @@ int main(int argc, char **argv) {
     int index = 0;
     // We can now iterate the sensors and print their names
     for (rs2::sensor sensor : sensors)
-        if (sensor.supports(RS2_CAMERA_INFO_NAME)) {
+        if (sensor.supports(RS2_CAMERA_INFO_NAME))
+        {
             ++index;
-            if (index == 1) {
+            if (index == 1)
+            {
                 sensor.set_option(RS2_OPTION_ENABLE_AUTO_EXPOSURE, 1);
-                sensor.set_option(RS2_OPTION_AUTO_EXPOSURE_LIMIT,5000);
+                sensor.set_option(RS2_OPTION_AUTO_EXPOSURE_LIMIT, 5000);
                 sensor.set_option(RS2_OPTION_EMITTER_ENABLED, 0); // switch off emitter
             }
             // std::cout << "  " << index << " : " << sensor.get_info(RS2_CAMERA_INFO_NAME) << std::endl;
             get_sensor_option(sensor);
-            if (index == 2){
+            if (index == 2)
+            {
                 // RGB camera (not used here...)
-                sensor.set_option(RS2_OPTION_EXPOSURE,100.f);
+                sensor.set_option(RS2_OPTION_EXPOSURE, 100.f);
             }
         }
 
@@ -162,25 +171,26 @@ int main(int argc, char **argv) {
     bool image_ready = false;
     int count_im_buffer = 0; // count dropped frames
 
-    auto imu_callback = [&](const rs2::frame& frame)
+    auto imu_callback = [&](const rs2::frame &frame)
     {
         std::unique_lock<std::mutex> lock(imu_mutex);
 
-        if(rs2::frameset fs = frame.as<rs2::frameset>())
+        if (rs2::frameset fs = frame.as<rs2::frameset>())
         {
             count_im_buffer++;
 
-            double new_timestamp_image = fs.get_timestamp()*1e-3;
-            if(abs(timestamp_image-new_timestamp_image)<0.001){
+            double new_timestamp_image = fs.get_timestamp() * 1e-3;
+            if (abs(timestamp_image - new_timestamp_image) < 0.001)
+            {
                 // cout << "Two frames with the same timeStamp!!!\n";
                 count_im_buffer--;
                 return;
             }
 
             rs2::video_frame ir_frameL = fs.get_infrared_frame(1);
-            imCV = cv::Mat(cv::Size(width_img, height_img), CV_8U, (void*)(ir_frameL.get_data()), cv::Mat::AUTO_STEP);
+            imCV = cv::Mat(cv::Size(width_img, height_img), CV_8U, (void *)(ir_frameL.get_data()), cv::Mat::AUTO_STEP);
 
-            timestamp_image = fs.get_timestamp()*1e-3;
+            timestamp_image = fs.get_timestamp() * 1e-3;
             image_ready = true;
 
             lock.unlock();
@@ -202,12 +212,12 @@ int main(int argc, char **argv) {
     std::cout << " cy = " << intrinsics_left.ppy << std::endl;
     std::cout << " height = " << intrinsics_left.height << std::endl;
     std::cout << " width = " << intrinsics_left.width << std::endl;
-    std::cout << " Coeff = " << intrinsics_left.coeffs[0] << ", " << intrinsics_left.coeffs[1] << ", " <<
-        intrinsics_left.coeffs[2] << ", " << intrinsics_left.coeffs[3] << ", " << intrinsics_left.coeffs[4] << ", " << std::endl;
+    std::cout << " Coeff = " << intrinsics_left.coeffs[0] << ", " << intrinsics_left.coeffs[1] << ", " << intrinsics_left.coeffs[2] << ", " << intrinsics_left.coeffs[3] << ", " << intrinsics_left.coeffs[4] << ", " << std::endl;
     std::cout << " Model = " << intrinsics_left.model << std::endl;
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1],argv[2],ORB_SLAM3::System::MONOCULAR, true, 0, file_name);
+    ORB_SLAM3::System SLAM(argv[1], argv[2], ORB_SLAM3::System::MONOCULAR, true, 0, file_name);
+    auto atlas = SLAM.mpAtlas;
     float imageScale = SLAM.GetImageScale();
 
     double timestamp;
@@ -216,8 +226,11 @@ int main(int argc, char **argv) {
     double t_resize = 0.f;
     double t_track = 0.f;
 
-    while (!SLAM.isShutDown())
+    std::vector<MapPoint *> vec;
+    // while (!SLAM.isShutDown())
+    for (int i = 0; i < 400; i++)
     {
+        cout << "Image nb" << i << endl;
         std::vector<rs2_vector> vGyro;
         std::vector<double> vGyro_times;
         std::vector<rs2_vector> vAccel;
@@ -225,17 +238,11 @@ int main(int argc, char **argv) {
 
         {
             std::unique_lock<std::mutex> lk(imu_mutex);
-            if(!image_ready)
+            if (!image_ready)
                 cond_image_rec.wait(lk);
 
-#ifdef COMPILEDWITHC11
-            std::chrono::steady_clock::time_point time_Start_Process = std::chrono::steady_clock::now();
-#else
-            std::chrono::monotonic_clock::time_point time_Start_Process = std::chrono::monotonic_clock::now();
-#endif
-
-            if(count_im_buffer>1)
-                cout << count_im_buffer -1 << " dropped frs\n";
+            if (count_im_buffer > 1)
+                cout << count_im_buffer - 1 << " dropped frs\n";
             count_im_buffer = 0;
 
             timestamp = timestamp_image;
@@ -244,48 +251,44 @@ int main(int argc, char **argv) {
             image_ready = false;
         }
 
-        if(imageScale != 1.f)
+        if (imageScale != 1.f)
         {
-#ifdef REGISTER_TIMES
-    #ifdef COMPILEDWITHC11
-            std::chrono::steady_clock::time_point t_Start_Resize = std::chrono::steady_clock::now();
-    #else
-            std::chrono::monotonic_clock::time_point t_Start_Resize = std::chrono::monotonic_clock::now();
-    #endif
-#endif
             int width = im.cols * imageScale;
             int height = im.rows * imageScale;
             cv::resize(im, im, cv::Size(width, height));
-
-#ifdef REGISTER_TIMES
-    #ifdef COMPILEDWITHC11
-            std::chrono::steady_clock::time_point t_End_Resize = std::chrono::steady_clock::now();
-    #else
-            std::chrono::monotonic_clock::time_point t_End_Resize = std::chrono::monotonic_clock::now();
-    #endif
-            t_resize = std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(t_End_Resize - t_Start_Resize).count();
-            SLAM.InsertResizeTime(t_resize);
-#endif
         }
-
-#ifdef REGISTER_TIMES
-    #ifdef COMPILEDWITHC11
-        std::chrono::steady_clock::time_point t_Start_Track = std::chrono::steady_clock::now();
-    #else
-        std::chrono::monotonic_clock::time_point t_Start_Track = std::chrono::monotonic_clock::now();
-    #endif
-#endif
         // Stereo images are already rectified.
         SLAM.TrackMonocular(im, timestamp);
-#ifdef REGISTER_TIMES
-    #ifdef COMPILEDWITHC11
-        std::chrono::steady_clock::time_point t_End_Track = std::chrono::steady_clock::now();
-    #else
-        std::chrono::monotonic_clock::time_point t_End_Track = std::chrono::monotonic_clock::now();
-    #endif
-        t_track = t_resize + std::chrono::duration_cast<std::chrono::duration<double,std::milli> >(t_End_Track - t_Start_Track).count();
-        SLAM.InsertTrackTime(t_track);
-#endif
+        if (i == 399)
+        {
+            std::vector<MapPoint *> map = atlas->GetAllMapPoints();
+            for (auto point : map)
+            {
+                auto pos = point->GetWorldPos();
+                cout << pos << endl;
+            }
+        }
+        // vec = SLAM.GetTrackedMapPoints();
+        // cout << "Map size = " << vec.size() << endl;
     }
+    // cout << SLAM.isShutDown() << endl;
+    // cout << "\n\n\n";
+    // int j = 0;
+    // cout << vec.size() << endl;
+    // for(auto point : vec)
+    // {
+    //     try
+    //     {
+    //         cout << "Point " << j << endl;
+    //         j ++;
+    //         Eigen::Vector3f pos = point->GetWorldPos();
+    //     }
+    //     catch(const std::exception& e)
+    //     {
+    //         std::cerr << e.what() << '\n';
+    //     }
+    // }
+    SLAM.Shutdown();
+
     cout << "System shutdown!\n";
 }
