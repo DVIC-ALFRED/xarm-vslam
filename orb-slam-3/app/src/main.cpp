@@ -95,7 +95,6 @@ static rs2_option get_sensor_option(const rs2::sensor &sensor)
 
 int main(int argc, char **argv)
 {
-
     if (argc < 3 || argc > 4)
     {
         cerr << endl
@@ -105,7 +104,6 @@ int main(int argc, char **argv)
     }
 
     string file_name;
-
     if (argc == 4)
     {
         file_name = string(argv[argc - 1]);
@@ -226,8 +224,7 @@ int main(int argc, char **argv)
     double t_resize = 0.f;
     double t_track = 0.f;
 
-    std::vector<MapPoint *> vec;
-    // while (!SLAM.isShutDown())
+    std::vector<MapPoint *> map;
     for (int i = 0; i < 400; i++)
     {
         cout << "Image nb" << i << endl;
@@ -260,35 +257,19 @@ int main(int argc, char **argv)
         // Stereo images are already rectified.
         SLAM.TrackMonocular(im, timestamp);
         if (i == 399)
-        {
-            std::vector<MapPoint *> map = atlas->GetAllMapPoints();
-            for (auto point : map)
-            {
-                auto pos = point->GetWorldPos();
-                cout << pos << endl;
-            }
-        }
-        // vec = SLAM.GetTrackedMapPoints();
-        // cout << "Map size = " << vec.size() << endl;
+            map = atlas->GetAllMapPoints();
     }
-    // cout << SLAM.isShutDown() << endl;
-    // cout << "\n\n\n";
-    // int j = 0;
-    // cout << vec.size() << endl;
-    // for(auto point : vec)
-    // {
-    //     try
-    //     {
-    //         cout << "Point " << j << endl;
-    //         j ++;
-    //         Eigen::Vector3f pos = point->GetWorldPos();
-    //     }
-    //     catch(const std::exception& e)
-    //     {
-    //         std::cerr << e.what() << '\n';
-    //     }
-    // }
-    SLAM.Shutdown();
+    std::ofstream mapFile;
+    mapFile.open("map.csv");
+    for (auto point : map)
+    {
+        auto pos = point->GetWorldPos();
+        mapFile << pos(0) << "," << pos(1) << "," << pos(2) << endl;
+        cout << "x=" << pos(0) << ", y=" << pos(1) << ", z=" << pos(2) << endl;
+    }
+    mapFile.close();
 
+    SLAM.Shutdown();
     cout << "System shutdown!\n";
+    return EXIT_SUCCESS;
 }
