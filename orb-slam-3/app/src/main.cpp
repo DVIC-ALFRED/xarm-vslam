@@ -93,21 +93,26 @@ static rs2_option get_sensor_option(const rs2::sensor &sensor)
     return static_cast<rs2_option>(selected_sensor_option);
 }
 
+bool is_number(const std::string& s)
+{
+    return !s.empty() && std::find_if(s.begin(), 
+        s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
+}
+
 int main(int argc, char **argv)
 {
-    if (argc < 3 || argc > 4)
+    if (argc < 3 || argc > 6)
     {
         cerr << endl
-             << "Usage: ./mono_realsense_D435i path_to_vocabulary path_to_settings (trajectory_file_name)"
+             << "Usage: ./executable path_to_vocabulary path_to_settings stop_number stop_mode file_name"
              << endl;
         return 1;
     }
 
-    string file_name;
-    if (argc == 4)
-    {
-        file_name = string(argv[argc - 1]);
-    }
+    int stop_number = stoi(argv[argc - 3]);
+    string stop_mode = string(argv[argc - 2]);
+    string file_name = string(argv[argc - 1]);
+    cout << stop_number << " " << stop_mode << " " << file_name << endl;
 
     struct sigaction sigIntHandler;
 
@@ -214,7 +219,8 @@ int main(int argc, char **argv)
     std::cout << " Model = " << intrinsics_left.model << std::endl;
 
     // Create SLAM system. It initializes all system threads and gets ready to process frames.
-    ORB_SLAM3::System SLAM(argv[1], argv[2], ORB_SLAM3::System::MONOCULAR, true, 0, file_name);
+    string previous_File_Name;
+    ORB_SLAM3::System SLAM(argv[1], argv[2], ORB_SLAM3::System::MONOCULAR, true, 0, previous_File_Name);
     auto atlas = SLAM.mpAtlas;
     float imageScale = SLAM.GetImageScale();
 
@@ -225,9 +231,12 @@ int main(int argc, char **argv)
     double t_track = 0.f;
 
     std::vector<MapPoint *> map;
-    for (int i = 0; i < 400; i++)
+    auto start = chrono::steady_clock::now();
+    std::chrono::steady_clock::time_point end;
+    bool stop = false;
+    int i = 0;
+    while (!stop)
     {
-        cout << "Image nb" << i << endl;
         std::vector<rs2_vector> vGyro;
         std::vector<double> vGyro_times;
         std::vector<rs2_vector> vAccel;
@@ -258,13 +267,28 @@ int main(int argc, char **argv)
         SLAM.TrackMonocular(im, timestamp);
         if (i == 399)
             map = atlas->GetAllMapPoints();
+        if (stop_mode == "0")
+        {
+            auto end = chrono::steady_clock::now();
+            auto delay = chrono::duration_cast<chrono::seconds>(end - start).count();
+            cout << "Delay " << delay << endl;
+            stop = (delay > stop_number);
+        }
+        else if (stop_mode == "1")
+        {
+            i ++;
+            cout << "Image " << i << endl;
+            stop = (i > stop_number);
+        }
     }
     std::ofstream mapFile;
-    mapFile.open("map.csv");
+    mapFile.open("/app/datasets/maps/" + file_name + ".csv");
+    mapFile << "x y z" << endl;
+    std::string sep = " ";
     for (auto point : map)
     {
         auto pos = point->GetWorldPos();
-        mapFile << pos(0) << "," << pos(1) << "," << pos(2) << endl;
+        mapFile << pos(0) << sep << pos(1) << sep << pos(2) << endl;
         cout << "x=" << pos(0) << ", y=" << pos(1) << ", z=" << pos(2) << endl;
     }
     mapFile.close();

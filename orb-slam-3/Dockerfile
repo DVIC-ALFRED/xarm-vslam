@@ -152,3 +152,11 @@ RUN mkdir build && \
     -D CMAKE_PREFIX_PATH=/usr/lib/x86_64-linux-gnu/ \
     /dpds/ORB_SLAM3 && \
     make -j4
+
+RUN apt-get install -y python3-pip libjpeg-dev zlib1g-dev python3-tk && \
+    apt-get update -y && \
+    apt-get upgrade -y && \
+    pip3 install pandas matplotlib open3d && \
+    apt-get update && \
+    pip3 install scikit-learn && \
+    pip3 install --upgrade matplotlib
